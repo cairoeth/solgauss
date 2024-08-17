@@ -1,0 +1,58 @@
+{
+  "name": "solstat",
+  "license": "AGPL-3.0-only",
+  "version": "1.0.0-beta",
+  "description": "Solidity library for statistical function approximations.",
+  "files": [
+    "src/**/*.sol"
+  ],
+  "scripts": {
+    "cli": "npx ts-node ./cli/cli.ts",
+    "build": "yarn generate",
+    "lint": "prettier --write **.sol && prettier --write **.ts",
+    "prepare": "husky install",
+    "generate": "cd ./test/differential/scripts/ && npm run generate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/primitivefinance/solstat.git"
+  },
+  "keywords": [
+    "hardhat",
+    "solidity",
+    "primitive",
+    "foundry"
+  ],
+  "devDependencies": {
+    "@types/node": "^17.0.24",
+    "dotenv": "^16.0.0",
+    "ethers": "^5.6.4",
+    "gaussian": "^1.2.0",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "prettier": "2.6.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "lint-staged": {
+    "*.ts": "prettier --write"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "resolutions": {
+    "async": ">=2.6.4",
+    "cross-fetch": ">=3.1.5",
+    "lodash": ">=4.17.21",
+    "node-fetch": ">=2.6.7",
+    "underscore": ">=1.12.1",
+    "yargs-parser": ">=5.0.1"
+  },
+  "dependencies": {
+    "evm-bn": "^1.1.2"
+  }
+}

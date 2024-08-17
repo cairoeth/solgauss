@@ -1,0 +1,33 @@
+name: tests
+on: push
+
+jobs:
+  tests:
+    name: Foundry tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: forge install
+
+      - name: Compile contracts
+        run: forge build
+        id: build
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+      - run: python -m venv venv && source venv/bin/activate && pip install mpmath
+
+      - name: Run tests
+        run: forge test -v
+        id: test

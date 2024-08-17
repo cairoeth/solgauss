@@ -1,0 +1,12 @@
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "lib/gud-cdf"]
+	path = lib/gud-cdf
+	url = https://github.com/Philogy/gud-cdf
+[submodule "lib/solstat"]
+	path = lib/solstat
+	url = https://github.com/primitivefinance/solstat
+[submodule "lib/solidity-cdf"]
+	path = lib/solidity-cdf
+	url = https://github.com/fiveoutofnine/solidity-cdf

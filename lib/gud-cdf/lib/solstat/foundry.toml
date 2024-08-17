@@ -1,0 +1,15 @@
+[profile.default]
+solc = "0.8.13"
+via_ir = true
+optimizer_runs = 15000
+ffi = true # important!
+remappings = [
+    'solmate/=lib/solmate/src/'
+]
+
+[profile.test]
+via_ir = false
+
+[fuzz]
+runs = 100000
+max_test_rejects = 4000000

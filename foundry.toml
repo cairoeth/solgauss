@@ -1,0 +1,17 @@
+[profile.default]
+src = "src"                                                      # Set the source directory.
+test = "test"                                                    # Set the test directory.
+out = "out"                                                      # Set the output directory for the artifacts.
+libs = ["lib"]                                                   # Configure an array of library directories.
+solc_version = "0.8.26"                                          # Set the Solidity compiler version.
+optimizer = true                                                 # Enable the Solidity compiler optimiser.
+optimizer_runs = 99999                                           # Configure the number of optimiser runs.
+ffi = true                                                       # Enable the foreign function interface (ffi) cheatcode.
+gas_reports = ["*"]                                              # Enable gas reports for all contracts.
+seed = 0x4444                                                    # Fixed fuzzing seed for accurate gas benchmarks.
+
+# Remapping for benchmarks.
+remappings = [
+    "solady/src/=lib/gud-cdf/lib/solady/src/",
+    "solidity-cdf/=lib/solidity-cdf/src/",
+]
