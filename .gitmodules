@@ -10,3 +10,6 @@
 [submodule "lib/solidity-cdf"]
 	path = lib/solidity-cdf
 	url = https://github.com/fiveoutofnine/solidity-cdf
+[submodule "lib/solady"]
+	path = lib/solady
+	url = https://github.com/Vectorized/solady

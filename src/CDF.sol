@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {FixedPointMathLib} from "solady/src/utils/FixedPointMathLib.sol";
+import {console2 as console} from "forge-std/console2.sol";
+
 library CDF {
+    using FixedPointMathLib for uint256;
+
     uint256 internal constant TWO = 2e18;
     uint256 internal constant POW = 96;
 
@@ -38,7 +43,7 @@ library CDF {
         }
     }
 
-    function erfinv(int256 x) internal pure returns (uint256 y) {
+    function erfinv(int256 x) internal pure returns (int256 y) {
         assembly {
             // https://github.com/Vectorized/solady/blob/be5200bdc2533875b4da6aef5da4dab53191c104/src/utils/FixedPointMathLib.sol#L932-L937
             let z := xor(sar(255, x), add(sar(255, x), x))
@@ -46,10 +51,13 @@ library CDF {
             for {} 1 {} {
                 if lt(z, 0xf5c28f5c28f5c28f5c28f5c2) {
                     let num := add(z, 0xfffffffffffffffffffffffffffffffffffffffd400dfee46b400881f0557851)
-                    num := add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffceacdf170815a8f3d7a9c434d)
+                    num :=
+                        add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffceacdf170815a8f3d7a9c434d)
                     num := add(sar(POW, mul(num, z)), 0xbcb268d6056245ec54b27dd7b)
-                    num := add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff8fef1964cade49feb70b562d3)
-                    num := add(sar(POW, mul(num, z)), 0xffffffffffffffffffffffffffffffffffffffffffffff14e3a9aa29bc2bb2f6)
+                    num :=
+                        add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff8fef1964cade49feb70b562d3)
+                    num :=
+                        add(sar(POW, mul(num, z)), 0xffffffffffffffffffffffffffffffffffffffffffffff14e3a9aa29bc2bb2f6)
                     let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffd6d3a989041c16ef3c2ad4c04)
                     denom :=
                         add(sar(POW, mul(denom, z)), 0xffffffffffffffffffffffffffffffffffffffff7225a92062d3ca8874dc4d59)
@@ -61,9 +69,11 @@ library CDF {
                 }
                 if lt(z, 0xfd70a3d70a3d70a3dbc32a73) {
                     let num := add(z, 0xffffffffffffffffffffffffffffffffffffffff9331c52ee2de921fc08d4082)
-                    num := add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffafa7bb86e60fb6718b0e075e3)
+                    num :=
+                        add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffafa7bb86e60fb6718b0e075e3)
                     num := add(sar(POW, mul(num, z)), 0x7526f84f82ebfdcd3718752ff)
-                    num := add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffd1fe28adc8b1add12ca5016d2)
+                    num :=
+                        add(sar(POW, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffd1fe28adc8b1add12ca5016d2)
                     let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffb7ae0ed4cfc8f118fcb0a300f)
                     denom := add(sar(POW, mul(denom, z)), 0x796e148d2a115e78c328b216e)
                     denom :=
@@ -72,10 +82,15 @@ library CDF {
                     y := sdiv(mul(0xfffffffffffffffffffffffffffffffffffffffffffffffffdc4ccbd2fab6ca0, num), denom)
                     break
                 }
-                // TODO: 0.99 - 1 range
-                y := 0
                 break
             }
+
+            if slt(x, 0) { y := sub(0, y) }
+        }
+
+        // TODO: 0.99 - 1 range
+        if (y == 0) {
+            console.log(FixedPointMathLib.log10(0.5 ether));
         }
     }
 

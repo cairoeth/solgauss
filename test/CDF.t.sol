@@ -16,6 +16,10 @@ contract Mock {
     function cdf(int256 x, int72 u, uint256 o) public pure returns (uint256) {
         return CDF.cdf(x, u, o);
     }
+
+    function erfinv(int256 x) public pure returns (int256) {
+        return CDF.erfinv(x);
+    }
 }
 
 contract MockPhilogy {
@@ -92,6 +96,19 @@ contract CDFTest is Test {
     }
 
     /// forge-config: default.fuzz.runs = 500
+    function testDifferentialErfinv(int256 x) public {
+        vm.assume(x != 0);
+        vm.assume(-0.99 ether <= x && x <= 0.99 ether);
+
+        int256 actual = mock.erfinv(getx96(x));
+
+        // error must be less than 1e-8
+        int256 expected = getErfinvPython(x);
+
+        assertApproxEqAbs(actual, expected, 1e-8 ether);
+    }
+
+    /// forge-config: default.fuzz.runs = 500
     function testDifferentialCdf(int256 x, int72 u, uint64 o) public {
         vm.assume(x != 0 && x > u);
         // Can't use bound because it's limited to uint.
@@ -132,6 +149,16 @@ contract CDFTest is Test {
 
         bytes memory result = vm.ffi(cmd);
         return abi.decode(result, (uint256));
+    }
+
+    function getErfinvPython(int256 x) internal returns (int256) {
+        string[] memory cmd = new string[](3);
+        cmd[0] = "venv/bin/python";
+        cmd[1] = "differential/erfinv.py";
+        cmd[2] = vm.toString(x);
+
+        bytes memory result = vm.ffi(cmd);
+        return abi.decode(result, (int256));
     }
 
     function getErfcJavascript(int256 x) public returns (uint256) {
