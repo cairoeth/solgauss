@@ -45,7 +45,7 @@ library CDF {
         }
     }
 
-    /// Calculates the inverse error function (erf^-1)
+    /// @notice Calculates the inverse error function (erf^-1)
     /// @param _x The value at which to evaluate the inverse error function (-1 < x < 1).
     /// @return _y The inverse error function output scaled by WAD.
     function erfinv(int256 _x) internal pure returns (int256 _y) {
@@ -141,7 +141,20 @@ library CDF {
     /// @param _x The value at which to evaluate the inverse complementary error function (0 < x < 2)
     /// @return _y The inverse complementary error function output scaled by WAD
     function ercfinv(int256 _x) internal pure returns (int256 _y) {
-        return erfinv(1 - _x);
+        assembly {
+            _x := sdiv(shl(POW, sub(ONE, _x)), ONE)
+        }
+        return erfinv(_x);
+    }
+
+    /// @param _x The value at which to evaluate the ppf.
+    /// @param _u The mean of the distribution (-1e20 ≤ μ ≤ 1e20).
+    /// @param _o The standard deviation (sigma) of the distribution (0 < σ ≤ 1e19).
+    function ppf(int256 _x, int72 _u, int256 _o) internal pure returns (int256 _y) {
+        // u - o * sqrt(2) * ercfinv(2 * x)
+        unchecked {
+            _y = _u - (_o * ((1414213562373095048 * ercfinv((2e18 * _x) / 1e18)) / 1e18)) / 1e18;
+        }
     }
 
     /// @param _x The value at which to evaluate the cdf.
