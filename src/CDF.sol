@@ -12,12 +12,12 @@ library CDF {
     uint256 internal constant TWO = 2e18;
     uint256 internal constant POW = 96;
 
-    /// @param x The value at which to evaluate the complementary error function.
-    /// @return y The complementary error function output scaled by WAD.
-    function erfc(int256 x) internal pure returns (uint256 y) {
+    /// @param _x The value at which to evaluate the complementary error function.
+    /// @return _y The complementary error function output scaled by WAD.
+    function erfc(int256 _x) internal pure returns (uint256 _y) {
         assembly {
             // https://github.com/Vectorized/solady/blob/be5200bdc2533875b4da6aef5da4dab53191c104/src/utils/FixedPointMathLib.sol#L932-L937
-            let z := xor(sar(255, x), add(sar(255, x), x))
+            let z := xor(sar(255, _x), add(sar(255, _x), _x))
 
             // (11,4) rational polynomial
             // 0x40d63886594af3ffffdf1498c = 4.0523 (scaled), returning 0 gives an error of 9.995e−9 (less than 1e-8)
@@ -38,18 +38,21 @@ library CDF {
                 denom :=
                     add(sar(POW, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffff0f0473c6ea8e169426cb0736f)
                 denom := add(sar(POW, mul(denom, z)), 0x211e2a69d8e1c99ad5fb3491e7)
-                y := sdiv(mul(0xffffffffffffffffffffffffffffffffffffffffffffffffffffe0041ef0b43e, num), denom)
+                _y := sdiv(mul(0xffffffffffffffffffffffffffffffffffffffffffffffffffffe0041ef0b43e, num), denom)
             }
 
-            if slt(x, 0) { y := sub(TWO, y) }
+            if slt(_x, 0) { _y := sub(TWO, _y) }
         }
     }
 
-    function erfinv(int256 x) internal pure returns (int256 y) {
+    /// Calculates the inverse error function (erf^-1)
+    /// @param _x The value at which to evaluate the inverse error function (-1 < x < 1).
+    /// @return _y The inverse error function output scaled by WAD.
+    function erfinv(int256 _x) internal pure returns (int256 _y) {
         // 0 - 0.99 range
         assembly {
             // https://github.com/Vectorized/solady/blob/be5200bdc2533875b4da6aef5da4dab53191c104/src/utils/FixedPointMathLib.sol#L932-L937
-            let z := xor(sar(255, x), add(sar(255, x), x))
+            let z := xor(sar(255, _x), add(sar(255, _x), _x))
 
             for {} 1 {} {
                 if lt(z, 0xf5c28f5c28f5c28f5c28f5c2) {
@@ -75,7 +78,7 @@ library CDF {
                     denom := add(sar(POW, mul(denom, z)), 0xd6ebe115934fd955caead076b)
                     denom :=
                         add(sar(POW, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa85a6c945287f53296c9e773f)
-                    y := sdiv(mul(0x48bff9f3dffa2d1, num), denom)
+                    _y := sdiv(mul(0x48bff9f3dffa2d1, num), denom)
                     break
                 }
                 if lt(z, 0xfd70a3d70a3d70a3d70a3d70) {
@@ -90,25 +93,25 @@ library CDF {
                     denom :=
                         add(sar(POW, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa6186bfb4d25c5bc472803388)
                     denom := add(sar(POW, mul(denom, z)), 0x18cb71166d99fa8a0a64822e2)
-                    y := sdiv(mul(0xfffffffffffffffffffffffffffffffffffffffffffffffffdc4ccbd2fab6ca0, num), denom)
+                    _y := sdiv(mul(0xfffffffffffffffffffffffffffffffffffffffffffffffffdc4ccbd2fab6ca0, num), denom)
                     break
                 }
                 break
             }
 
-            if slt(x, 0) { y := sub(0, y) }
+            if slt(_x, 0) { _y := sub(0, _y) }
         }
 
         // 0.99 - 1 range
-        if (y == 0) {
+        if (_y == 0) {
             // turn POW-scaled back to WAD for now
             assembly {
-                x := sdiv(mul(x, ONE), shl(POW, 1))
+                _x := sdiv(mul(_x, ONE), shl(POW, 1))
             }
 
-            // sqrt(log(2) - log(1.0 - x)) - 1.6
+            // sqrt(log(2) - log(1.0 - _x)) - 1.6
             int256 r =
-                int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(1e18 - x))));
+                int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(1e18 - _x))));
 
             assembly {
                 r := sub(r, 1600000000000000000)
@@ -129,9 +132,16 @@ library CDF {
                 z2 := add(sdiv(mul(z2, r), ONE), 2903651444541994617)
                 z2 := add(sdiv(mul(z2, r), ONE), 1414213562373095048)
 
-                y := sdiv(mul(z1, ONE_2), z2)
+                _y := sdiv(mul(z1, ONE_2), z2)
             }
         }
+    }
+
+    /// @notice Calculates the inverse complementary error function (erfc^-1)
+    /// @param _x The value at which to evaluate the inverse complementary error function (0 < x < 2)
+    /// @return _y The inverse complementary error function output scaled by WAD
+    function ercfinv(int256 _x) internal pure returns (int256 _y) {
+        return erfinv(1 - _x);
     }
 
     /// @param _x The value at which to evaluate the cdf.
