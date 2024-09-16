@@ -13,8 +13,8 @@ contract Mock {
         return CDF.erfc(x);
     }
 
-    function cdf(int256 x, int72 u, uint256 o) public pure returns (uint256) {
-        return CDF.cdf(x, u, o);
+    function cdf(int256 _x, int256 _u, uint256 _o) public pure returns (uint256) {
+        return CDF.cdf(_x, _u, _o);
     }
 
     function erfinv(int256 x) public pure returns (int256) {
