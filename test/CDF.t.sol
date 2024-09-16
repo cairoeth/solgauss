@@ -13,16 +13,20 @@ contract Mock {
         return CDF.erfc(x);
     }
 
-    function cdf(int256 _x, int256 _u, uint256 _o) public pure returns (uint256) {
-        return CDF.cdf(_x, _u, _o);
-    }
-
     function erfinv(int256 x) public pure returns (int256) {
         return CDF.erfinv(x);
     }
 
-    function ppf(int256 _x, int72 _u, int256 _o) public pure returns (uint256) {
-        return uint256(CDF.ppf(_x, _u, _o));
+    function erfcinv(int256 x) public pure returns (int256) {
+        return CDF.erfcinv(x);
+    }
+
+    function ppf(int256 _x, int72 _u, int256 _o) public pure returns (int256) {
+        return CDF.ppf(_x, _u, _o);
+    }
+
+    function cdf(int256 _x, int256 _u, uint256 _o) public pure returns (uint256) {
+        return CDF.cdf(_x, _u, _o);
     }
 }
 
@@ -113,6 +117,37 @@ contract CDFTest is Test {
     }
 
     /// forge-config: default.fuzz.runs = 500
+    function testDifferentialErfcinv(int256 x) public {
+        vm.assume(0 < x && x < 2e18);
+
+        int256 actual = mock.erfcinv(x);
+
+        // error must be less than 1e-8
+        int256 expected = getErfcinvPython(x);
+
+        assertApproxEqAbs(stdMath.abs(actual), stdMath.abs(expected), 1e-8 ether);
+    }
+
+    /// forge-config: default.fuzz.runs = 500
+    function testDifferentialPpf(int256 x, int72 u, int256 o) public {
+        vm.assume(u < x && 0 < x && x <= 0.999999999e18);
+        // Can't use bound because it's limited to uint.
+        // -1e20 ≤ μ ≤ 1e20
+        vm.assume(MEAN_LOWER <= u && u <= MEAN_UPPER);
+        // 0 < σ ≤ 1e19
+        vm.assume(0 < o && o <= 1e19);
+        // interval [-1e23, 1e23]
+        vm.assume(INPUT_LOWER <= x && x <= INPUT_UPPER);
+
+        int256 actual = mock.ppf(x, u, o);
+
+        // error must be less than 1e-8
+        int256 expected = getPpfPython(x, u, o);
+
+        assertApproxEqAbs(stdMath.abs(actual), stdMath.abs(expected), 1e-8 ether);
+    }
+
+    /// forge-config: default.fuzz.runs = 500
     function testDifferentialCdf(int256 x, int72 u, uint64 o) public {
         vm.assume(x != 0 && x > u);
         // Can't use bound because it's limited to uint.
@@ -137,24 +172,6 @@ contract CDFTest is Test {
         philogy.cdf(x, u, o);
         fiveoutofnine.cdf(x, u, o);
         solstat.cdf(x);
-    }
-
-    /// forge-config: default.fuzz.runs = 500
-    function testDifferentialPpf(int256 x, int72 u, int256 o) public {
-        vm.assume(x != 0 && x > u);
-        // Can't use bound because it's limited to uint.
-        // -1e20 ≤ μ ≤ 1e20
-        vm.assume(MEAN_LOWER <= u && u <= MEAN_UPPER);
-        // 0 < σ ≤ 1e19
-        vm.assume(0 < o && o <= 1e19);
-        // interval [-1e23, 1e23]
-        vm.assume(INPUT_LOWER <= x && x <= INPUT_UPPER);
-
-        uint256 actual = mock.ppf(x, u, o);
-
-        // error must be less than 1e-8
-        uint256 expected = getPpfPython(x, u, o);
-        assertApproxEqAbs(actual, expected, 1e-8 ether);
     }
 
     function getx96(int256 x) internal pure returns (int256 x96) {
@@ -183,7 +200,17 @@ contract CDFTest is Test {
         return abi.decode(result, (int256));
     }
 
-    function getPpfPython(int256 x, int72 u, int256 o) internal returns (uint256) {
+    function getErfcinvPython(int256 x) internal returns (int256) {
+        string[] memory cmd = new string[](3);
+        cmd[0] = "venv/bin/python";
+        cmd[1] = "differential/erfcinv.py";
+        cmd[2] = vm.toString(x);
+
+        bytes memory result = vm.ffi(cmd);
+        return abi.decode(result, (int256));
+    }
+
+    function getPpfPython(int256 x, int72 u, int256 o) internal returns (int256) {
         string[] memory cmd = new string[](5);
         cmd[0] = "venv/bin/python";
         cmd[1] = "differential/ppf.py";
@@ -192,7 +219,7 @@ contract CDFTest is Test {
         cmd[4] = vm.toString(o);
 
         bytes memory result = vm.ffi(cmd);
-        return abi.decode(result, (uint256));
+        return abi.decode(result, (int256));
     }
 
     function getErfcJavascript(int256 x) public returns (uint256) {

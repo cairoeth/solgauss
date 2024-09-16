@@ -141,7 +141,7 @@ library CDF {
     /// @notice Calculates the inverse complementary error function (erfc^-1)
     /// @param _x The value at which to evaluate the inverse complementary error function (0 < x < 2)
     /// @return _y The inverse complementary error function output scaled by WAD
-    function ercfinv(int256 _x) internal pure returns (int256 _y) {
+    function erfcinv(int256 _x) internal pure returns (int256 _y) {
         assembly {
             _x := sdiv(shl(POW, sub(ONE, _x)), ONE)
         }
@@ -154,7 +154,7 @@ library CDF {
     function ppf(int256 _x, int72 _u, int256 _o) internal pure returns (int256 _y) {
         // u - o * sqrt(2) * ercfinv(2 * x)
         unchecked {
-            _y = _u - (_o * ((1414213562373095048 * ercfinv((2e18 * _x) / 1e18)) / 1e18)) / 1e18;
+            _y = _u - (_o * ((1414213562373095048 * erfcinv((2e18 * _x) / 1e18)) / 1e18)) / 1e18;
         }
     }
 
