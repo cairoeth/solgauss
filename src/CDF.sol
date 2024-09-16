@@ -8,7 +8,7 @@ library CDF {
     using FixedPointMathLib for uint256;
 
     uint256 internal constant ONE = 1e18;
-    uint256 internal constant ONE_2 = 1e15;
+    int256 internal constant ONE_2 = 1e18;
     uint256 internal constant TWO = 2e18;
     uint256 internal constant POW = 96;
 
@@ -112,7 +112,7 @@ library CDF {
 
             // sqrt(log(2) - log(1.0 - _x)) - 1.6
             int256 r =
-                int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(1e18 - _x))));
+                int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(ONE_2 - _x))));
 
             assembly {
                 r := sub(r, 1600000000000000000)
@@ -133,7 +133,7 @@ library CDF {
                 z2 := add(sdiv(mul(z2, r), ONE), 2903651444541994617)
                 z2 := add(sdiv(mul(z2, r), ONE), 1414213562373095048)
 
-                _y := sdiv(mul(z1, ONE_2), z2)
+                _y := sdiv(mul(z1, 1000000000000000), z2)
             }
         }
     }
@@ -154,7 +154,7 @@ library CDF {
     function ppf(int256 _x, int72 _u, int256 _o) internal pure returns (int256 _y) {
         // u - o * sqrt(2) * ercfinv(2 * x)
         unchecked {
-            _y = _u - (_o * ((1414213562373095048 * erfcinv((2e18 * _x) / 1e18)) / 1e18)) / 1e18;
+            _y = _u - (_o * ((1414213562373095048 * erfcinv((2e18 * _x) / ONE_2)) / ONE_2)) / ONE_2;
         }
     }
 
