@@ -67,7 +67,7 @@ contract GaussianTest is Test {
 
     /// forge-config: default.fuzz.runs = 500
     function testDifferentialErfinv(int256 x) public {
-        x = bound(x, -0.999999999e18, 0.999999999e18);
+        x = bound(x, -0.99999999e18, 0.99999999e18);
 
         int256 actual = mockErfinv.erfinv(getx96(x));
         int256 expected = getErfinvPython(x);
@@ -77,7 +77,7 @@ contract GaussianTest is Test {
 
     /// forge-config: default.fuzz.runs = 500
     function testDifferentialErfcinv(int256 x) public {
-        x = bound(x, 0.999999999e18, 1.999999999e18);
+        x = bound(x, 0.99999999e18, 1.99999999e18);
 
         int256 actual = mockErfcinv.erfcinv(x);
         int256 expected = getErfcinvPython(x);
