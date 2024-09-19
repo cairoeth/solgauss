@@ -155,7 +155,7 @@ library CDF {
     /// @param _x The value at which to evaluate the ppf.
     /// @param _u The mean of the distribution (-1e20 ≤ μ ≤ 1e20).
     /// @param _o The standard deviation (sigma) of the distribution (0 < σ ≤ 1e19).
-    function ppf(int256 _x, int72 _u, int256 _o) internal pure returns (int256 _y) {
+    function ppf(int256 _x, int256 _u, int256 _o) internal pure returns (int256 _y) {
         // u - o * sqrt(2) * ercfinv(2 * x)
         unchecked {
             _y = _u - (_o * ((1414213562373095048 * erfcinv((2e18 * _x) / ONE_2)) / ONE_2)) / ONE_2;

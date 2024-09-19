@@ -3,58 +3,7 @@ pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
 
-import {CDF} from "src/CDF.sol";
-import {CDF as CDFPhilogy} from "gud-cdf/CDF.sol";
-import {Gaussian} from "solstat/Gaussian.sol";
-import {GaussianYul as Gaussian2} from "solidity-cdf/GaussianYul.sol";
-
-contract Mock {
-    function erfc(int256 x) public pure returns (uint256) {
-        return CDF.erfc(x);
-    }
-
-    function erfinv(int256 x) public pure returns (int256) {
-        return CDF.erfinv(x);
-    }
-
-    function erfcinv(int256 x) public pure returns (int256) {
-        return CDF.erfcinv(x);
-    }
-
-    function ppf(int256 _x, int72 _u, int256 _o) public pure returns (int256) {
-        return CDF.ppf(_x, _u, _o);
-    }
-
-    function cdf(int256 _x, int256 _u, uint256 _o) public pure returns (uint256) {
-        return CDF.cdf(_x, _u, _o);
-    }
-}
-
-contract MockPhilogy {
-    function erfc(int256 x) public pure returns (uint256) {
-        return CDFPhilogy._innerErfc(x);
-    }
-
-    function cdf(int256 x, int72 u, uint256 o) public pure returns (uint256) {
-        return CDFPhilogy.cdf(x, u, o);
-    }
-}
-
-contract MockFiveoutofnine {
-    function cdf(int256 x, int72 u, uint256 o) public pure returns (uint256) {
-        return Gaussian2.cdf(x, u, o);
-    }
-}
-
-contract MockSolstat {
-    function erfc(int256 x) public pure returns (int256) {
-        return Gaussian.erfc(x);
-    }
-
-    function cdf(int256 x) public pure returns (int256) {
-        return Gaussian.cdf(x);
-    }
-}
+import "test/mocks/Mocks.sol";
 
 contract CDFTest is Test {
     uint256 internal constant POW = 96;
@@ -71,16 +20,34 @@ contract CDFTest is Test {
     int256 internal constant ERFC_DOMAIN_UPPER = 6.24 ether;
     int256 internal constant ERFC_DOMAIN_LOWER = -ERFC_DOMAIN_UPPER;
 
-    Mock mock;
-    MockPhilogy philogy;
-    MockFiveoutofnine fiveoutofnine;
-    MockSolstat solstat;
+    MockCdf mockCdf;
+    MockErfc mockErfc;
+    MockErfinv mockErfinv;
+    MockErfcinv mockErfcinv;
+    MockPpf mockPpf;
+
+    MockPhilogyCdf mockPhilogyCdf;
+    MockPhilogyErfc mockPhilogyErfc;
+
+    MockFiveoutofnineCdf mockFiveoutofnineCdf;
+
+    MockSolstatErfc mockSolstatErfc;
+    MockSolstatCdf mockSolstatCdf;
 
     function setUp() public {
-        mock = new Mock();
-        philogy = new MockPhilogy();
-        fiveoutofnine = new MockFiveoutofnine();
-        solstat = new MockSolstat();
+        mockCdf = new MockCdf();
+        mockErfc = new MockErfc();
+        mockErfinv = new MockErfinv();
+        mockErfcinv = new MockErfcinv();
+        mockPpf = new MockPpf();
+
+        mockPhilogyCdf = new MockPhilogyCdf();
+        mockPhilogyErfc = new MockPhilogyErfc();
+
+        mockFiveoutofnineCdf = new MockFiveoutofnineCdf();
+
+        mockSolstatErfc = new MockSolstatErfc();
+        mockSolstatCdf = new MockSolstatCdf();
     }
 
     /// forge-config: default.fuzz.runs = 500
@@ -88,28 +55,21 @@ contract CDFTest is Test {
         vm.assume(x != 0);
         vm.assume(ERFC_DOMAIN_LOWER <= x && x <= ERFC_DOMAIN_UPPER);
 
-        uint256 actual = mock.erfc(getx96(x));
-
-        // error must be less than 1e-8
+        uint256 actual = mockErfc.erfc(getx96(x));
         uint256 expected = getErfcPython(x);
+
         assertApproxEqAbs(actual, expected, 1e-8 ether);
 
-        // error must be less than 1e-8
-        // uint256 expected2 = getErfcJavascript(x);
-        // assertApproxEqAbs(actual, expected2, 1e-8 ether);
-
         // benchmarks
-        philogy.erfc(getx96(x));
-        solstat.erfc(x);
+        mockPhilogyErfc.erfc(getx96(x));
+        mockSolstatErfc.erfc(x);
     }
 
     /// forge-config: default.fuzz.runs = 500
     function testDifferentialErfinv(int256 x) public {
         x = bound(x, -0.999999999e18, 0.999999999e18);
 
-        int256 actual = mock.erfinv(getx96(x));
-
-        // error must be less than 1e-8
+        int256 actual = mockErfinv.erfinv(getx96(x));
         int256 expected = getErfinvPython(x);
 
         assertApproxEqAbs(stdMath.abs(actual), stdMath.abs(expected), 1e-8 ether);
@@ -119,9 +79,7 @@ contract CDFTest is Test {
     function testDifferentialErfcinv(int256 x) public {
         x = bound(x, 0.999999999e18, 1.999999999e18);
 
-        int256 actual = mock.erfcinv(x);
-
-        // error must be less than 1e-8
+        int256 actual = mockErfcinv.erfcinv(x);
         int256 expected = getErfcinvPython(x);
 
         assertApproxEqAbs(stdMath.abs(actual), stdMath.abs(expected), 1e-8 ether);
@@ -139,9 +97,7 @@ contract CDFTest is Test {
         // interval [-1e23, 1e23]
         vm.assume(INPUT_LOWER <= x && x <= INPUT_UPPER);
 
-        int256 actual = mock.ppf(x, u, o);
-
-        // error must be less than 1e-8
+        int256 actual = mockPpf.ppf(x, u, o);
         int256 expected = getPpfPython(x, u, o);
 
         assertApproxEqAbs(stdMath.abs(actual), stdMath.abs(expected), 1e-8 ether);
@@ -158,20 +114,15 @@ contract CDFTest is Test {
         // interval [-1e23, 1e23]
         vm.assume(INPUT_LOWER <= x && x <= INPUT_UPPER);
 
-        uint256 actual = mock.cdf(x, u, o);
-
-        // error must be less than 1e-8
+        uint256 actual = mockCdf.cdf(x, u, o);
         uint256 expected = getCdfPython(x, u, o);
+
         assertApproxEqAbs(actual, expected, 1e-8 ether);
 
-        // error must be less than 1e-8
-        // uint256 expected2 = getCdfJavascript(x, u, o);
-        // assertApproxEqAbs(actual, expected2, 1e-8 ether);
-
         // benchmarks
-        philogy.cdf(x, u, o);
-        fiveoutofnine.cdf(x, u, o);
-        solstat.cdf(x);
+        mockPhilogyCdf.cdf(x, u, o);
+        mockFiveoutofnineCdf.cdf(x, u, o);
+        mockSolstatCdf.cdf(x);
     }
 
     function getx96(int256 x) internal pure returns (int256 x96) {
@@ -222,20 +173,6 @@ contract CDFTest is Test {
         return abi.decode(result, (int256));
     }
 
-    function getErfcJavascript(int256 x) public returns (uint256) {
-        string[] memory cmd = new string[](7);
-        cmd[0] = "yarn";
-        cmd[1] = "--cwd";
-        cmd[2] = "differential/";
-        cmd[3] = "--silent";
-        cmd[4] = "run";
-        cmd[5] = "erfc";
-        cmd[6] = vm.toString(x);
-
-        bytes memory result = vm.ffi(cmd);
-        return abi.decode(result, (uint256));
-    }
-
     function getCdfPython(int256 x, int72 u, uint64 o) internal returns (uint256) {
         string[] memory cmd = new string[](5);
         cmd[0] = "venv/bin/python";
@@ -243,22 +180,6 @@ contract CDFTest is Test {
         cmd[2] = vm.toString(x);
         cmd[3] = vm.toString(u);
         cmd[4] = vm.toString(o);
-
-        bytes memory result = vm.ffi(cmd);
-        return abi.decode(result, (uint256));
-    }
-
-    function getCdfJavascript(int256 x, int72 u, uint64 o) public returns (uint256) {
-        string[] memory cmd = new string[](9);
-        cmd[0] = "yarn";
-        cmd[1] = "--cwd";
-        cmd[2] = "differential/";
-        cmd[3] = "--silent";
-        cmd[4] = "run";
-        cmd[5] = "cdf";
-        cmd[6] = vm.toString(x);
-        cmd[7] = vm.toString(u);
-        cmd[8] = vm.toString(o);
 
         bytes memory result = vm.ffi(cmd);
         return abi.decode(result, (uint256));
