@@ -50,94 +50,95 @@ library CDF {
     /// @param _x The value at which to evaluate the inverse error function (-1 < x < 1).
     /// @return _y The inverse error function output scaled by WAD.
     function erfinv(int256 _x) internal pure returns (int256 _y) {
-        int256 z;
-        uint256 test;
+        unchecked {
+            int256 z;
 
-        // 0 - 0.99 range
-        assembly {
-            // https://github.com/Vectorized/solady/blob/be5200bdc2533875b4da6aef5da4dab53191c104/src/utils/FixedPointMathLib.sol#L932-L937
-            z := xor(sar(255, _x), add(sar(255, _x), _x))
+            // 0 - 0.99 range
+            assembly {
+                // https://github.com/Vectorized/solady/blob/be5200bdc2533875b4da6aef5da4dab53191c104/src/utils/FixedPointMathLib.sol#L932-L937
+                z := xor(sar(255, _x), add(sar(255, _x), _x))
 
-            for {} 1 {} {
-                let pow := POW
-                if lt(z, 0xf5c28f5c28f5c28f5c28f5c2) {
-                    let num := add(z, 0xfffffffffffffffffffffffffffffffffffffffbd156a4dc207899e2ab98b3ab)
-                    num :=
-                        add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffcbd9a8d0ed0981f0ddbb667dd)
-                    num := add(sar(pow, mul(num, z)), 0x1f69b01a95fc46bbab505f7876)
-                    num :=
-                        add(sar(pow, mul(num, z)), 0xffffffffffffffffffffffffffffffffffffffdd6f2336207ace4f468f290c9f)
-                    num :=
-                        add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff413e33d087ff2f6b29f1f174c)
-                    num := add(sar(pow, mul(num, z)), 0x24557d6a5386815359e9da9552)
-                    num :=
-                        add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff12ec63ba934b3a974e645c055)
-                    num := add(sar(pow, mul(num, z)), 0x44266f1dd31a336ee)
-                    let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffc05d4b83f43643780e63fa31f)
-                    denom := add(sar(pow, mul(denom, z)), 0x11b628e24001f98eb0d2d0e49)
-                    denom := add(sar(pow, mul(denom, z)), 0xd2f794b85e1989ff37bf3cfd7)
-                    denom :=
-                        add(sar(pow, mul(denom, z)), 0xffffffffffffffffffffffffffffffffffffffefb41be778336df3585c1114e1)
-                    denom :=
-                        add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffd06cbc0aa3ad7b8c573c7494d)
-                    denom := add(sar(pow, mul(denom, z)), 0xd6ebe115934fd955caead076b)
-                    denom :=
-                        add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa85a6c945287f53296c9e773f)
-                    _y := sdiv(mul(0x48bff9f3dffa2d1, num), denom)
+                for {} 1 {} {
+                    let pow := POW
+                    if lt(z, 0xf5c28f5c28f5c28f5c28f5c2) {
+                        let num := add(z, 0xfffffffffffffffffffffffffffffffffffffffbd156a4dc207899e2ab98b3ab)
+                        num :=
+                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffcbd9a8d0ed0981f0ddbb667dd)
+                        num := add(sar(pow, mul(num, z)), 0x1f69b01a95fc46bbab505f7876)
+                        num :=
+                            add(sar(pow, mul(num, z)), 0xffffffffffffffffffffffffffffffffffffffdd6f2336207ace4f468f290c9f)
+                        num :=
+                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff413e33d087ff2f6b29f1f174c)
+                        num := add(sar(pow, mul(num, z)), 0x24557d6a5386815359e9da9552)
+                        num :=
+                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff12ec63ba934b3a974e645c055)
+                        num := add(sar(pow, mul(num, z)), 0x44266f1dd31a336ee)
+                        let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffc05d4b83f43643780e63fa31f)
+                        denom := add(sar(pow, mul(denom, z)), 0x11b628e24001f98eb0d2d0e49)
+                        denom := add(sar(pow, mul(denom, z)), 0xd2f794b85e1989ff37bf3cfd7)
+                        denom :=
+                            add(sar(pow, mul(denom, z)), 0xffffffffffffffffffffffffffffffffffffffefb41be778336df3585c1114e1)
+                        denom :=
+                            add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffd06cbc0aa3ad7b8c573c7494d)
+                        denom := add(sar(pow, mul(denom, z)), 0xd6ebe115934fd955caead076b)
+                        denom :=
+                            add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa85a6c945287f53296c9e773f)
+                        _y := sdiv(mul(0x48bff9f3dffa2d1, num), denom)
+                        break
+                    }
+                    if lt(z, 0xfd70a3d70a3d70a3d70a3d70) {
+                        let num := add(z, 0xffffffffffffffffffffffffffffffffffffffff9331c52ee2de921fc08d4082)
+                        num :=
+                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffafa7bb86e60fb6718b0e075e3)
+                        num := add(sar(pow, mul(num, z)), 0x7526f84f82ebfdcd3718752ff)
+                        num :=
+                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffd1fe28adc8b1add12ca5016d2)
+                        let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffb7ae0ed4cfc8f118fcb0a300f)
+                        denom := add(sar(pow, mul(denom, z)), 0x796e148d2a115e78c328b216e)
+                        denom :=
+                            add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa6186bfb4d25c5bc472803388)
+                        denom := add(sar(pow, mul(denom, z)), 0x18cb71166d99fa8a0a64822e2)
+                        _y := sdiv(mul(0xfffffffffffffffffffffffffffffffffffffffffffffffffdc4ccbd2fab6ca0, num), denom)
+                        break
+                    }
+                    // (z * ONE) / shl(pow, 1)
+                    z := sdiv(mul(z, ONE), 79228162514264337593543950336)
                     break
                 }
-                if lt(z, 0xfd70a3d70a3d70a3d70a3d70) {
-                    let num := add(z, 0xffffffffffffffffffffffffffffffffffffffff9331c52ee2de921fc08d4082)
-                    num :=
-                        add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffafa7bb86e60fb6718b0e075e3)
-                    num := add(sar(pow, mul(num, z)), 0x7526f84f82ebfdcd3718752ff)
-                    num :=
-                        add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffd1fe28adc8b1add12ca5016d2)
-                    let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffb7ae0ed4cfc8f118fcb0a300f)
-                    denom := add(sar(pow, mul(denom, z)), 0x796e148d2a115e78c328b216e)
-                    denom :=
-                        add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa6186bfb4d25c5bc472803388)
-                    denom := add(sar(pow, mul(denom, z)), 0x18cb71166d99fa8a0a64822e2)
-                    _y := sdiv(mul(0xfffffffffffffffffffffffffffffffffffffffffffffffffdc4ccbd2fab6ca0, num), denom)
-                    break
-                }
-                test := shl(pow, 1)
-                z := sdiv(mul(z, ONE), shl(pow, 1))
-                break
             }
-        }
 
-        // 0.99 - 1 range
-        if (_y == 0) {
-            // sqrt(log(2) - log(1.0 - _x)) - 1.6
-            int256 r =
-                int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(ONE_2 - z))));
+            // 0.99 - 1 range
+            if (_y == 0) {
+                // sqrt(log(2) - log(1.0 - _x)) - 1.6
+                int256 r =
+                    int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(ONE_2 - z))));
+
+                assembly {
+                    let one := ONE
+                    r := sub(r, 1600000000000000000)
+
+                    let num := add(sdiv(mul(774545014278341407, r), one), 22723844989269184583)
+                    num := add(sdiv(mul(num, r), one), 241780725177450611770)
+                    num := add(sdiv(mul(num, r), one), 1270458252452368382580)
+                    num := add(sdiv(mul(num, r), one), 3647848324763204605040)
+                    num := add(sdiv(mul(num, r), one), 5769497221460691405500)
+                    num := add(sdiv(mul(num, r), one), 4630337846156545295900)
+                    num := add(sdiv(mul(num, r), one), 1423437110749683577340)
+                    let denom := add(sdiv(mul(1485985001, r), one), 774414590651577)
+                    denom := add(sdiv(mul(denom, r), one), 21494160384252876)
+                    denom := add(sdiv(mul(denom, r), one), 209450652105127491)
+                    denom := add(sdiv(mul(denom, r), one), 975478320017874271)
+                    denom := add(sdiv(mul(denom, r), one), 2370766162602453236)
+                    denom := add(sdiv(mul(denom, r), one), 2903651444541994617)
+                    denom := add(sdiv(mul(denom, r), one), 1414213562373095048)
+
+                    _y := sdiv(mul(num, 1000000000000000), denom)
+                }
+            }
 
             assembly {
-                let one := ONE
-                r := sub(r, 1600000000000000000)
-
-                let num := add(sdiv(mul(774545014278341407, r), one), 22723844989269184583)
-                num := add(sdiv(mul(num, r), one), 241780725177450611770)
-                num := add(sdiv(mul(num, r), one), 1270458252452368382580)
-                num := add(sdiv(mul(num, r), one), 3647848324763204605040)
-                num := add(sdiv(mul(num, r), one), 5769497221460691405500)
-                num := add(sdiv(mul(num, r), one), 4630337846156545295900)
-                num := add(sdiv(mul(num, r), one), 1423437110749683577340)
-                let denom := add(sdiv(mul(1485985001, r), one), 774414590651577)
-                denom := add(sdiv(mul(denom, r), one), 21494160384252876)
-                denom := add(sdiv(mul(denom, r), one), 209450652105127491)
-                denom := add(sdiv(mul(denom, r), one), 975478320017874271)
-                denom := add(sdiv(mul(denom, r), one), 2370766162602453236)
-                denom := add(sdiv(mul(denom, r), one), 2903651444541994617)
-                denom := add(sdiv(mul(denom, r), one), 1414213562373095048)
-
-                _y := sdiv(mul(num, 1000000000000000), denom)
+                if slt(_x, 0) { _y := sub(0, _y) }
             }
-        }
-
-        assembly {
-            if slt(_x, 0) { _y := sub(0, _y) }
         }
     }
 
