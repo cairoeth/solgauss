@@ -105,8 +105,7 @@ contract CDFTest is Test {
 
     /// forge-config: default.fuzz.runs = 500
     function testDifferentialErfinv(int256 x) public {
-        vm.assume(x != 0);
-        vm.assume(-0.999999999e18 <= x && x <= 0.999999999e18);
+        x = bound(x, -0.999999999e18, 0.999999999e18);
 
         int256 actual = mock.erfinv(getx96(x));
 
@@ -117,13 +116,13 @@ contract CDFTest is Test {
     }
 
     /// forge-config: default.fuzz.runs = 500
-    function testDifferentialErfcinv(uint256 x) public {
-        vm.assume(1e9 <= x && x < 2e18);
+    function testDifferentialErfcinv(int256 x) public {
+        x = bound(x, 0.999999999e18, 1.999999999e18);
 
-        int256 actual = mock.erfcinv(int256(x));
+        int256 actual = mock.erfcinv(x);
 
         // error must be less than 1e-8
-        int256 expected = getErfcinvPython(int256(x));
+        int256 expected = getErfcinvPython(x);
 
         assertApproxEqAbs(stdMath.abs(actual), stdMath.abs(expected), 1e-8 ether);
     }
