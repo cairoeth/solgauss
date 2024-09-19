@@ -2,7 +2,7 @@
 
 [![CI][ci-badge]][ci-url]
 
-Solidity library for statistical functions rationally approximated with an error of less than 1 × 10<sup>-8</sup>, including `erfc`, `erfinv`, `erfcinv`, `ppf`, and `cdf`.
+Highly optimized Solidity library for statistical functions rationally approximated with an error of less than 1 × 10⁻⁸, including `erfc`, `erfinv`, `erfcinv`, `ppf`, and `cdf`.
 
 ## ⚙️ Installation
 
