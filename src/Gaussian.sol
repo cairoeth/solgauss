@@ -2,9 +2,8 @@
 pragma solidity ^0.8.0;
 
 import {FixedPointMathLib} from "solady/src/utils/FixedPointMathLib.sol";
-import {console2 as console} from "forge-std/console2.sol";
 
-library CDF {
+library Gaussian {
     using FixedPointMathLib for uint256;
 
     uint256 internal constant ONE = 1e18;

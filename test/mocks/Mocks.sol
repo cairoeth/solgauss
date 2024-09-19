@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {CDF} from "src/CDF.sol";
+import {Gaussian} from "src/Gaussian.sol";
 import {CDF as Philogy} from "gud-cdf/CDF.sol";
 import {Gaussian as Solstat} from "solstat/Gaussian.sol";
 import {GaussianYul as Fiveoutofnine} from "solidity-cdf/GaussianYul.sol";
@@ -10,31 +10,31 @@ import {GaussianYul as Fiveoutofnine} from "solidity-cdf/GaussianYul.sol";
 
 contract MockCdf {
     function cdf(int256 x, int256 u, uint256 o) public pure returns (uint256) {
-        return CDF.cdf(x, u, o);
+        return Gaussian.cdf(x, u, o);
     }
 }
 
 contract MockErfc {
     function erfc(int256 x) public pure returns (uint256) {
-        return CDF.erfc(x);
+        return Gaussian.erfc(x);
     }
 }
 
 contract MockErfinv {
     function erfinv(int256 x) public pure returns (int256) {
-        return CDF.erfinv(x);
+        return Gaussian.erfinv(x);
     }
 }
 
 contract MockErfcinv {
     function erfcinv(int256 x) public pure returns (int256) {
-        return CDF.erfcinv(x);
+        return Gaussian.erfcinv(x);
     }
 }
 
 contract MockPpf {
     function ppf(int256 x, int256 u, int256 o) public pure returns (int256) {
-        return CDF.ppf(x, u, o);
+        return Gaussian.ppf(x, u, o);
     }
 }
 

@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 
 import "test/mocks/Mocks.sol";
 
-contract CDFTest is Test {
+contract GaussianTest is Test {
     uint256 internal constant POW = 96;
     uint256 internal constant ONE = 1 ether;
 

@@ -8,7 +8,7 @@ optimizer = true                                                 # Enable the So
 optimizer_runs = 99999                                           # Configure the number of optimiser runs.
 ffi = true                                                       # Enable the foreign function interface (ffi) cheatcode.
 gas_reports = ["*"]                                              # Enable gas reports for all contracts.
-seed = 0x4444                                                    # Fixed fuzzing seed for accurate gas benchmarks.
+seed = 0x123                                                     # Fixed fuzzing seed for accurate gas benchmarks.
 
 # Remapping for benchmarks.
 remappings = [
