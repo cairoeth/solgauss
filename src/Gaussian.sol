@@ -7,7 +7,7 @@ library Gaussian {
     using FixedPointMathLib for uint256;
 
     uint256 internal constant ONE = 1e18;
-    int256 internal constant ONE_2 = 1e18;
+    uint256 internal constant ONE_SQUARED = 1e36;
     uint256 internal constant TWO = 2e18;
     uint256 internal constant POW = 96;
 
@@ -110,7 +110,7 @@ library Gaussian {
             if (_y == 0) {
                 // sqrt(log(2) - log(1.0 - _x)) - 1.6
                 int256 r =
-                    int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(ONE_2 - z))));
+                    int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(1e18 - z))));
 
                 assembly {
                     let one := ONE
@@ -156,8 +156,9 @@ library Gaussian {
     /// @param _o The standard deviation (sigma) of the distribution (0 < σ ≤ 1e19).
     function ppf(int256 _x, int256 _u, int256 _o) internal pure returns (int256 _y) {
         // u - o * sqrt(2) * ercfinv(2 * x)
-        unchecked {
-            _y = _u - (_o * ((1414213562373095048 * erfcinv((2e18 * _x) / ONE_2)) / ONE_2)) / ONE_2;
+        _y = erfcinv(2 * _x);
+        assembly {
+            _y := sub(_u, sdiv(mul(_o, mul(_y, 1414213562373095048)), ONE_SQUARED))
         }
     }
 

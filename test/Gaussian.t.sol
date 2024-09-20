@@ -86,16 +86,12 @@ contract GaussianTest is Test {
     }
 
     /// forge-config: default.fuzz.runs = 500
-    function testDifferentialPpf(int64 x, int72 u, int256 o) public {
-        vm.assume(2e9 <= x && x < 1e18);
-        vm.assume(u < x);
-        // Can't use bound because it's limited to uint.
+    function testDifferentialPpf(int256 x, int256 u, int256 o) public {
+        x = bound(x, 0.99999999e9, 1.99999999e9);
         // -1e20 ≤ μ ≤ 1e20
-        vm.assume(MEAN_LOWER <= u && u <= MEAN_UPPER);
-        // 0 < σ ≤ 1e19
-        vm.assume(0 < o && o <= 1e19);
-        // interval [-1e23, 1e23]
-        vm.assume(INPUT_LOWER <= x && x <= INPUT_UPPER);
+        u = bound(u, -1e20, x);
+        // 0 < σ ≤ 1e18
+        o = bound(o, 0, 1e18);
 
         int256 actual = mockPpf.ppf(x, u, o);
         int256 expected = getPpfPython(x, u, o);
@@ -161,7 +157,7 @@ contract GaussianTest is Test {
         return abi.decode(result, (int256));
     }
 
-    function getPpfPython(int256 x, int72 u, int256 o) internal returns (int256) {
+    function getPpfPython(int256 x, int256 u, int256 o) internal returns (int256) {
         string[] memory cmd = new string[](5);
         cmd[0] = "venv/bin/python";
         cmd[1] = "differential/ppf.py";
