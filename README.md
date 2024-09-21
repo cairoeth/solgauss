@@ -49,7 +49,7 @@ To run the gas benchmark: `forge t --gas-report --fuzz-seed 0x123`
 
 | Function |  min |  avg | median |  max |
 |----------|------|------|--------|------|
-| ppf      |  856 | 1687 |   2034 | 2034 |
+| ppf      | 2001 | 2001 |   2001 | 2001 |
 
 ## ✅ Tests
 

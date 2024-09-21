@@ -7,7 +7,7 @@ library Gaussian {
     using FixedPointMathLib for uint256;
 
     uint256 internal constant ONE = 1e18;
-    uint256 internal constant ONE_SQUARED = 1e36;
+    int256 internal constant ONE_SQUARED = 1e36;
     uint256 internal constant TWO = 2e18;
     uint256 internal constant POW = 96;
 
@@ -154,11 +154,10 @@ library Gaussian {
     /// @param _x The value at which to evaluate the ppf.
     /// @param _u The mean of the distribution (-1e20 ≤ μ ≤ 1e20).
     /// @param _o The standard deviation (sigma) of the distribution (0 < σ ≤ 1e19).
-    function ppf(int256 _x, int256 _u, int256 _o) internal pure returns (int256 _y) {
+    function ppf(int256 _x, int256 _u, int256 _o) internal pure returns (int256) {
         // u - o * sqrt(2) * ercfinv(2 * x)
-        _y = erfcinv(2 * _x);
-        assembly {
-            _y := sub(_u, sdiv(mul(_o, mul(_y, 1414213562373095048)), ONE_SQUARED))
+        unchecked {
+            return _u - (_o * 1414213562373095048 * erfcinv(2 * _x) / ONE_SQUARED);
         }
     }
 
