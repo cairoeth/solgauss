@@ -9,7 +9,7 @@ Highly optimized Solidity library for statistical functions rationally approxima
 To install with [**Foundry**](https://github.com/foundry-rs/foundry):
 
 ```sh
-forge install cairoeth/solcdf
+forge install cairoeth/solgauss
 ```
 
 ## ⛽ Gas Benchmarks
@@ -20,7 +20,7 @@ To run the gas benchmark: `forge t --gas-report --fuzz-seed 0x123`
 
 | Function           |  min |  avg | median |  max |
 |--------------------|------|------|--------|------|
-| cdf (solcdf)       |  519 |  610 |    519 |  833 |
+| cdf (solgauss)     |  519 |  610 |    519 |  833 |
 | cdf (solidity-cdf) |  492 |  617 |    492 |  914 |
 | cdf (gud-cdf)      |  704 |  736 |    704 |  841 |
 | cdf (solstat)      |  916 | 4258 |   5137 | 5137 |
@@ -29,7 +29,7 @@ To run the gas benchmark: `forge t --gas-report --fuzz-seed 0x123`
 
 | Function        |  min |  avg | median |  max |
 |-----------------|------|------|--------|------|
-| erfc (solcdf)   |  687 |  688 |    687 |  693 |
+| erfc (solgauss)   |  687 |  688 |    687 |  693 |
 | erfc (gud-cdf)  |  569 |  570 |    569 |  603 |
 | erfc (solstat)  | 4436 | 4453 |   4436 | 4543 |
 
