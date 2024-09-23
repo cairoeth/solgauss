@@ -4,8 +4,6 @@ pragma solidity ^0.8.0;
 import {FixedPointMathLib} from "solady/src/utils/FixedPointMathLib.sol";
 
 library Gaussian {
-    using FixedPointMathLib for uint256;
-
     uint256 internal constant ONE = 1e18;
     int256 internal constant ONE_SQUARED = 1e36;
     uint256 internal constant TWO = 2e18;

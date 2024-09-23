@@ -65,6 +65,7 @@ To run the tests: `forge t`
 This repository is inspired by or directly modified from many sources, primarily:
 
 - [gud-cdf](https://github.com/Philogy/gud-cdf): codification script
+- [Rational Chebyshev Approximation Using Linear Equations](https://link.springer.com/article/10.1007/BF02162506)
 
 [ci-badge]: https://github.com/cairoeth/solgauss/actions/workflows/test.yml/badge.svg
 [ci-url]: https://github.com/cairoeth/solgauss/actions/workflows/test.yml
