@@ -58,48 +58,39 @@ library Gaussian {
                 for {} 1 {} {
                     let pow := POW
                     if lt(z, 0xf5c28f5c28f5c28f5c28f5c2) {
-                        let num := add(z, 0xfffffffffffffffffffffffffffffffffffffffbd156a4dc207899e2ab98b3ab)
-                        num :=
-                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffcbd9a8d0ed0981f0ddbb667dd)
+                        let num := sub(z, 0x42ea95b23df87661d54674c55)
+                        num := sub(sar(pow, mul(num, z)), 0x3426572f12f67e0f224499823)
                         num := add(sar(pow, mul(num, z)), 0x1f69b01a95fc46bbab505f7876)
-                        num :=
-                            add(sar(pow, mul(num, z)), 0xffffffffffffffffffffffffffffffffffffffdd6f2336207ace4f468f290c9f)
-                        num :=
-                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff413e33d087ff2f6b29f1f174c)
+                        num := sub(sar(pow, mul(num, z)), 0x2290dcc9df8531b0b970d6f361)
+                        num := sub(sar(pow, mul(num, z)), 0xbec1cc2f7800d094d60e0e8b4)
                         num := add(sar(pow, mul(num, z)), 0x24557d6a5386815359e9da9552)
-                        num :=
-                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffff12ec63ba934b3a974e645c055)
+                        num := sub(sar(pow, mul(num, z)), 0xed139c456cb4c568b19ba3fab)
                         num := add(sar(pow, mul(num, z)), 0x44266f1dd31a336ee)
-                        let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffc05d4b83f43643780e63fa31f)
+                        let denom := sub(z, 0x3fa2b47c0bc9bc87f19c05ce1)
                         denom := add(sar(pow, mul(denom, z)), 0x11b628e24001f98eb0d2d0e49)
                         denom := add(sar(pow, mul(denom, z)), 0xd2f794b85e1989ff37bf3cfd7)
-                        denom :=
-                            add(sar(pow, mul(denom, z)), 0xffffffffffffffffffffffffffffffffffffffefb41be778336df3585c1114e1)
-                        denom :=
-                            add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffd06cbc0aa3ad7b8c573c7494d)
+                        denom := sub(sar(pow, mul(denom, z)), 0x104be41887cc920ca7a3eeeb1f)
+                        denom := sub(sar(pow, mul(denom, z)), 0x2f9343f55c528473a8c38b6b3)
                         denom := add(sar(pow, mul(denom, z)), 0xd6ebe115934fd955caead076b)
-                        denom :=
-                            add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa85a6c945287f53296c9e773f)
+                        denom := sub(sar(pow, mul(denom, z)), 0x57a5936bad780acd6936188c1)
                         _y := sdiv(mul(0x48bff9f3dffa2d1, num), denom)
                         break
                     }
                     if lt(z, 0xfd70a3d70a3d70a3d70a3d70) {
-                        let num := add(z, 0xffffffffffffffffffffffffffffffffffffffff9331c52ee2de921fc08d4082)
-                        num :=
-                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffafa7bb86e60fb6718b0e075e3)
+                        let num := sub(z, 0x6cce3ad11d216de03f72bf7e)
+                        num := sub(sar(pow, mul(num, z)), 0x5058447919f0498e74f1f8a1d)
                         num := add(sar(pow, mul(num, z)), 0x7526f84f82ebfdcd3718752ff)
-                        num :=
-                            add(sar(pow, mul(num, z)), 0xfffffffffffffffffffffffffffffffffffffffd1fe28adc8b1add12ca5016d2)
-                        let denom := add(z, 0xfffffffffffffffffffffffffffffffffffffffb7ae0ed4cfc8f118fcb0a300f)
+                        num := sub(sar(pow, mul(num, z)), 0x2e01d752374e522ed35afe92e)
+                        let denom := sub(z, 0x4851f12b30370ee7034f5cff1)
                         denom := add(sar(pow, mul(denom, z)), 0x796e148d2a115e78c328b216e)
-                        denom :=
-                            add(sar(pow, mul(denom, z)), 0xfffffffffffffffffffffffffffffffffffffffa6186bfb4d25c5bc472803388)
+                        denom := sub(sar(pow, mul(denom, z)), 0x59e79404b2da3a43b8d7fcc78)
                         denom := add(sar(pow, mul(denom, z)), 0x18cb71166d99fa8a0a64822e2)
+
                         _y := sdiv(mul(0xfffffffffffffffffffffffffffffffffffffffffffffffffdc4ccbd2fab6ca0, num), denom)
                         break
                     }
                     // (z * ONE) / shl(pow, 1)
-                    z := sdiv(mul(z, ONE), 79228162514264337593543950336)
+                    z := sdiv(mul(z, ONE), 0x1000000000000000000000000)
                     break
                 }
             }
@@ -107,29 +98,30 @@ library Gaussian {
             // 0.99 - 1 range
             if (_y == 0) {
                 // sqrt(log(2) - log(1.0 - _x)) - 1.6
-                int256 r =
-                    int256(FixedPointMathLib.sqrtWad(uint256(693147180559945309 - FixedPointMathLib.lnWad(1e18 - z))));
+                int256 r = int256(
+                    FixedPointMathLib.sqrt(uint256(693147180559945309 - FixedPointMathLib.lnWad(1e18 - z)) * 10 ** 18)
+                );
 
                 assembly {
                     let one := ONE
-                    r := sub(r, 1600000000000000000)
+                    r := sub(r, 0x16345785d8a00000)
 
-                    let num := add(sdiv(mul(774545014278341407, r), one), 22723844989269184583)
-                    num := add(sdiv(mul(num, r), one), 241780725177450611770)
-                    num := add(sdiv(mul(num, r), one), 1270458252452368382580)
-                    num := add(sdiv(mul(num, r), one), 3647848324763204605040)
-                    num := add(sdiv(mul(num, r), one), 5769497221460691405500)
-                    num := add(sdiv(mul(num, r), one), 4630337846156545295900)
-                    num := add(sdiv(mul(num, r), one), 1423437110749683577340)
-                    let denom := add(sdiv(mul(1485985001, r), one), 774414590651577)
-                    denom := add(sdiv(mul(denom, r), one), 21494160384252876)
-                    denom := add(sdiv(mul(denom, r), one), 209450652105127491)
-                    denom := add(sdiv(mul(denom, r), one), 975478320017874271)
-                    denom := add(sdiv(mul(denom, r), one), 2370766162602453236)
-                    denom := add(sdiv(mul(denom, r), one), 2903651444541994617)
-                    denom := add(sdiv(mul(denom, r), one), 1414213562373095048)
+                    let num := add(sdiv(mul(0xabfbc96369c431f, r), one), 0x13b5b509f246e1047)
+                    num := add(sdiv(mul(num, r), one), 0xd1b61b08a2a49c43a)
+                    num := add(sdiv(mul(num, r), one), 0x44df26696ddaf67a74)
+                    num := add(sdiv(mul(num, r), one), 0xc5c010a43e4e965470)
+                    num := add(sdiv(mul(num, r), one), 0x138c3dbb2cfe7ba4abc)
+                    num := add(sdiv(mul(num, r), one), 0xfb02d89a7f8035061c)
+                    num := add(sdiv(mul(num, r), one), 0x4d2a287e88a740f1fc)
+                    let denom := add(sdiv(mul(0x589254e9, r), one), 0x2c0537295acb9)
+                    denom := add(sdiv(mul(denom, r), one), 0x4c5cd33272dbcc)
+                    denom := add(sdiv(mul(denom, r), one), 0x2e81e4224b33643)
+                    denom := add(sdiv(mul(denom, r), one), 0xd89985d1ec29d5f)
+                    denom := add(sdiv(mul(denom, r), one), 0x20e6a743976f68f4)
+                    denom := add(sdiv(mul(denom, r), one), 0x284bd79ac779b679)
+                    denom := add(sdiv(mul(denom, r), one), 0x13a04bbdfdc9be88)
 
-                    _y := sdiv(mul(num, 1000000000000000), denom)
+                    _y := sdiv(mul(num, 0x38d7ea4c68000), denom)
                 }
             }
 
@@ -155,7 +147,7 @@ library Gaussian {
     function ppf(int256 _x, int256 _u, int256 _o) internal pure returns (int256) {
         // u - o * sqrt(2) * ercfinv(2 * x)
         unchecked {
-            return _u - (_o * 1414213562373095048 * erfcinv(2 * _x) / ONE_SQUARED);
+            return _u - (_o * 0x13a04bbdfdc9be88 * erfcinv(2 * _x) / ONE_SQUARED);
         }
     }
 
